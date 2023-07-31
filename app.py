@@ -1,6 +1,5 @@
 import os
 import pathlib
-
 import requests
 from flask import Flask, session, abort, redirect, request
 from google.oauth2 import id_token
@@ -22,6 +21,13 @@ flow = Flow.from_client_secrets_file(
     redirect_uri="https://8218-75-172-80-33.ngrok-free.app/callback"
     )
 
+# create a fake in memory database as a Python dictionary
+fake_database = {
+    "users": {},
+    "save_user": lambda google_id, first_name, last_name, email: fake_database["users"].update({google_id: {"first_name": first_name, "last_name": last_name, "email": email}}),
+    "get_user_by_google_id": lambda google_id: fake_database["users"].get(google_id)
+}
+
 def login_is_required(function):
     def wrapper(*args, **kwargs):
         if "google_id" not in session:
@@ -36,8 +42,10 @@ def login():
     session["state"] = state
     return redirect(authorization_url)
 
-@app.route("/callback")
+@app.route("/callback", methods=["POST"])
 def callback():
+    token = request.json.get("token")
+    
     flow.fetch_token(authorization_response=request.url)
     
     if not session["state"] == request.args["state"]:
@@ -56,6 +64,18 @@ def callback():
     
     session["google_id"] = id_info.get("sub")
     session["name"] = id_info.get("name")
+    
+    #Save user information to the database
+    
+    googleId = id_info.get("sub")
+    firstName = id_info.get("given_name")
+    lastName =id_info.get("family_name")
+    email = id_info.get("email")
+    
+    fakeDatabase.saveuser(googleId, firstName, lastName, email)
+    
+    return {"success": True}
+
     return redirect("/protected_area")
     
 @app.route("/logout")
@@ -70,7 +90,15 @@ def index():
 @app.route("/protected_area")
 @login_is_required
 def protected_area():
-    return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
+    #Retrieve the user's google ID from the session
+    google_id = session.get("google_id")
+    
+    #Retrieve the user's information from the fake database
+    user = fake_database.get_user_by_google_id(google_id)
+    
+    if user:
+        #If user exists, display their information
+        return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, abort, make_response, request
 from app import db
 from sqlalchemy import inspect, asc
 
-# from app.models.card import Card
+from app.models.user import User
 from app.models.message import Message
 from app.routes.routes_helper import get_valid_item_by_id
 
@@ -38,9 +38,11 @@ def create_farewell_message():
 
     # Give back our response
     return {
-        "id": new_message.id,
-        "message": new_message.message,
-        "recipient_email": new_message.recipient_email,
+        "id": new_message.message_id,
+        "text_message": new_message.text_message,
+        "audio_message": new_message.audio_message,
+        "id_recipient": new_message.id_recipient,
+        # "recipient_email": new_message.recipient_email,
         "msg": "Successfully created"
     }, 201
     
