@@ -1,104 +1,147 @@
-import os
-import pathlib
-import requests
-from flask import Flask, session, abort, redirect, request
-from google.oauth2 import id_token
-from google_auth_oauthlib.flow import Flow
-from pip._vendor import cachecontrol
-import google.auth.transport.requests
+# import os
+# import pathlib
+# import requests
+# from flask import Flask, session, abort, redirect, request, jsonify
+# from google.oauth2 import id_token
+# from google_auth_oauthlib.flow import Flow
+# from pip._vendor import cachecontrol
+# import google.auth.transport.requests
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import sessionmaker
+# from app.models.user import User
 
-app = Flask("Google Login for Morti")
-app.secret_key = "Morti.com"
+# app = Flask("Google Login for Morti")
+# app.secret_key = "Morti.com"
 
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+# #Replace with actual URI for PostgresSQL database
+# # database_uri = postgresql+psycopg2://morti_user:BqeLIVyDEuv21TkEOwWSff1Ni9qufnVC@dpg-cj0odq18g3n9brvcq7tg-a.oregon-postgres.render.com/morti
+# engine = create_engine(database_uri)
+# # Base.metadata.create_all(engine)
+# Session = sessionmaker(bind=engine)
 
-GOOGLE_CLIENT_ID = "444393723578-hqvu6heuhrubn9putumbq943iredeh73.apps.googleusercontent.com"
-client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
+# os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-flow = Flow.from_client_secrets_file(
-    client_secrets_file=client_secrets_file, 
-    scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
-    redirect_uri="https://8218-75-172-80-33.ngrok-free.app/callback"
-    )
+# GOOGLE_CLIENT_ID = "444393723578-hqvu6heuhrubn9putumbq943iredeh73.apps.googleusercontent.com"
+# client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
 
-# create a fake in memory database as a Python dictionary
-fake_database = {
-    "users": {},
-    "save_user": lambda google_id, first_name, last_name, email: fake_database["users"].update({google_id: {"first_name": first_name, "last_name": last_name, "email": email}}),
-    "get_user_by_google_id": lambda google_id: fake_database["users"].get(google_id)
-}
+# flow = Flow.from_client_secrets_file(
+#     client_secrets_file=client_secrets_file, 
+#     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
+#     redirect_uri="https://8218-75-172-80-33.ngrok-free.app/callback"
+#     )
 
-def login_is_required(function):
-    def wrapper(*args, **kwargs):
-        if "google_id" not in session:
-            return abort(401) #Authorization required
-        else:
-            return function()
-    return wrapper
+# # create a fake in memory database as a Python dictionary
+# fake_database = {
+#     "users": {},
+#     "save_user": lambda google_id, first_name, last_name, email: fake_database["users"].update({google_id: {"first_name": first_name, "last_name": last_name, "email": email}}),
+#     "get_user_by_google_id": lambda google_id: fake_database["users"].get(google_id)
+# }
 
-@app.route("/login")
-def login():
-    authorization_url, state = flow.authorization_url()
-    session["state"] = state
-    return redirect(authorization_url)
+# def login_is_required(function):
+#     def wrapper(*args, **kwargs):
+#         if "google_id" not in session:
+#             return abort(401) #Authorization required
+#         else:
+#             return function()
+#     return wrapper
 
-@app.route("/callback", methods=["POST"])
-def callback():
-    token = request.json.get("token")
+# @app.route("/login")
+# def login():
+#     authorization_url, state = flow.authorization_url()
+#     session["state"] = state
+#     return redirect(authorization_url)
+
+# def save_user_to_database(id_info):
+#     google_id = id_info.get("sub")
+#     first_name = id_info.get("given_name")
+#     last_name = id_info.get("family_name")
+#     email = id_info.get("email")
     
-    flow.fetch_token(authorization_response=request.url)
+#     #Save user information to the fake database
+#     fake_database.save_user(google_id, first_name, last_name, email)
     
-    if not session["state"] == request.args["state"]:
-        abort(500) #State does not match!
+#     #Save user information to the PostgresSQL database
+#     session = Session()
+#     user = User(google_id=google_id, first_name=first_name, last_name=last_name, email=email)
+#     session.add(user)
+#     session.commit()
+#     session.close()
+    
+#     return True
 
-    credentials = flow.credentials
-    request_session = requests.session()
-    cached_session = cachecontrol.CacheControl(request_session)
-    token_request = google.auth.transport.requests.Request(session=cached_session)
+# @app.route("/callback", methods=["POST"])
+# def callback():
+#     token = request.json.get("token")
+    
+#     # Fetch the Google ID token from the request body
+#     if not token:
+#         return jsonify({"success": False, "error": "Token not provided"}), 400
+    
+#     #Simulate token verification (implement actual)
+#     try: 
+#         id_info = id_token.verify_oauth2_token(
+#             id_token=token,
+#             request=google.auth.transport.requests.Request(),
+#             audience=GOOGLE_CLIENT_ID
+#         )    
+#     except ValueError:
+#         return jsonify({"success": False, "error": "Invalid token"}), 400
+    
+#     # flow.fetch_token(authorization_response=request.url)
+    
+#     # if not session["state"] == request.args["state"]:
+#     #     abort(500) #State does not match!
 
-    id_info = id_token.verify_oauth2_token(
-        id_token=credentials._id_token,
-        request=token_request,
-        audience=GOOGLE_CLIENT_ID
-    )
-    
-    session["google_id"] = id_info.get("sub")
-    session["name"] = id_info.get("name")
-    
-    #Save user information to the database
-    
-    googleId = id_info.get("sub")
-    firstName = id_info.get("given_name")
-    lastName =id_info.get("family_name")
-    email = id_info.get("email")
-    
-    fakeDatabase.saveuser(googleId, firstName, lastName, email)
-    
-    return {"success": True}
+#     # credentials = flow.credentials
+#     # request_session = requests.session()
+#     # cached_session = cachecontrol.CacheControl(request_session)
+#     # token_request = google.auth.transport.requests.Request(session=cached_session)
 
-    return redirect("/protected_area")
+#     # id_info = id_token.verify_oauth2_token(
+#     #     id_token=credentials._id_token,
+#     #     request=token_request,
+#     #     audience=GOOGLE_CLIENT_ID
+#     # )
     
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect("/")
-
-@app.route("/")
-def index():
-    return "Hello World <a href='/login'><button>Login</button></a>"
-
-@app.route("/protected_area")
-@login_is_required
-def protected_area():
-    #Retrieve the user's google ID from the session
-    google_id = session.get("google_id")
+#     #Save user information to the session
     
-    #Retrieve the user's information from the fake database
-    user = fake_database.get_user_by_google_id(google_id)
+#     session["google_id"] = id_info.get("sub")
+#     session["name"] = id_info.get("name")
     
-    if user:
-        #If user exists, display their information
-        return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
+#     #Save user information to the database
+    
+#     # google_id = id_info.get("sub")
+#     # first_name = id_info.get("given_name")
+#     # last_name =id_info.get("family_name")
+#     # email = id_info.get("email")
+    
+#     # fake_database.save_user(google_id, first_name, last_name, email)
+    
+#     return redirect("/dashboard")
+    
+# @app.route("/logout")
+# def logout():
+#     session.clear()
+#     return redirect("/")
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# @app.route("/")
+# def index():
+#     return "Hello World <a href='/login'><button>Login</button></a>"
+
+# @app.route("/dashboard")
+# @login_is_required
+# def dashboard():
+#     #Retrieve the user's google ID from the session
+#     google_id = session.get("google_id")
+    
+#     #Retrieve the user's information from the fake database
+#     user = fake_database.get_user_by_google_id(google_id)
+    
+#     if user:
+#         #If user exists, display their information
+#         return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
+
+# if __name__ == "__main__":
+#     app.run(debug=True)
+    
+
