@@ -1,11 +1,13 @@
 from app import db 
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 
 class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.String(50))
+    email = db.Column(db.String(100))
     # password = db.Column(db.String(50))
-    first_name = db.Column(db.String(50))
-    last_name = db.Column(db.String(50))
+    first_name = db.Column(db.String(100))
+    last_name = db.Column(db.String(100))
     
     def to_dict(self):
         return {
@@ -22,4 +24,6 @@ class User(db.Model):
             first_name=user_details["first_name"],
             last_name=user_details["last_name"]
         )
+        
+        
         return new_user
