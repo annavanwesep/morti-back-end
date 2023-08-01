@@ -25,7 +25,6 @@ def create_app():
     migrate = Migrate(app, db)
     load_dotenv()
 
-    # app = Flask("Google Login for Morti")
     app.secret_key = "Morti.com"
 
     # Create the engine and bind it to the sessionmaker
@@ -34,14 +33,14 @@ def create_app():
 
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-    # GOOGLE_CLIENT_ID = "444393723578-hqvu6heuhrubn9putumbq943iredeh73.apps.googleusercontent.com"
-    # client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
+    GOOGLE_CLIENT_ID = "444393723578-hqvu6heuhrubn9putumbq943iredeh73.apps.googleusercontent.com"
+    client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
 
-    # flow = Flow.from_client_secrets_file(
-    #     client_secrets_file=client_secrets_file, 
-    #     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
-    #     redirect_uri="https://8218-75-172-80-33.ngrok-free.app/callback"
-    #     )
+    flow = Flow.from_client_secrets_file(
+        client_secrets_file=client_secrets_file, 
+        scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
+        redirect_uri="https://8218-75-172-80-33.ngrok-free.app/callback"
+        )
 
     # create a fake in memory database as a Python dictionary
     fake_database = {
@@ -64,23 +63,23 @@ def create_app():
     #     session["state"] = state
     #     return redirect(authorization_url)
 
-    # def save_user_to_database(id_info):
-    #     google_id = id_info.get("sub")
-    #     first_name = id_info.get("given_name")
-    #     last_name = id_info.get("family_name")
-    #     email = id_info.get("email")
+    def save_user_to_database(id_info):
+        google_id = id_info.get("sub")
+        first_name = id_info.get("given_name")
+        last_name = id_info.get("family_name")
+        email = id_info.get("email")
         
-    #     #Save user information to the fake database
-    #     fake_database.save_user(google_id, first_name, last_name, email)
+        #Save user information to the fake database
+        fake_database.save_user(google_id, first_name, last_name, email)
         
-    #     #Save user information to the PostgresSQL database
-    #     session = Session()
-    #     user = User(google_id=google_id, first_name=first_name, last_name=last_name, email=email)
-    #     session.add(user)
-    #     session.commit()
-    #     session.close()
+        #Save user information to the PostgresSQL database
+        session = Session()
+        user = User(google_id=google_id, first_name=first_name, last_name=last_name, email=email)
+        session.add(user)
+        session.commit()
+        session.close()
         
-    #     return True
+        return True
 
     @app.route("/session", methods=["POST"])
     def session():
@@ -157,6 +156,7 @@ def create_app():
             return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
 
     if __name__ == "__main__":
+        app = create_app
         app.run(debug=True)
     
 
