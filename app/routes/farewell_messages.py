@@ -42,7 +42,7 @@ def create_farewell_message():
         "text_message": new_message.text_message,
         "audio_message": new_message.audio_message,
         "id_recipient": new_message.id_recipient,
-        # "recipient_email": new_message.recipient_email,
+        "recipient_email": new_message.recipient_email,
         "msg": "Successfully created"
     }, 201
     
