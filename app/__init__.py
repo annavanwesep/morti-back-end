@@ -13,8 +13,8 @@ def create_app():
     app = Flask(__name__)
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("RENDER_DATABASE_URI")
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres@localhost/morti_database'
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("RENDER_DATABASE_URI")
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres@localhost/morti_database'
 
     # Import models here for Alembic setup
     # from app.models.ExampleModel import ExampleModel
