@@ -9,7 +9,7 @@ from app.models.user import User
 # All routes defined with user_bp start with url_prefix (/users)
 user_bp = Blueprint("users", __name__, url_prefix="/users")
 
-@user_bp.route("/user", methods=['GET'])
+@user_bp.route("</id>", methods=['GET']) #Mark suggested using user here instead of id
 def get(id):
     #get token from the request header
     #decode the token 
