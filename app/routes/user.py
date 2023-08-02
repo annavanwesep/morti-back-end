@@ -9,9 +9,17 @@ from app.models.user import User
 # All routes defined with user_bp start with url_prefix (/users)
 user_bp = Blueprint("users", __name__, url_prefix="/users")
 
-@user_bp.route("/<id>", methods=['GET'])
+@user_bp.route("/user", methods=['GET'])
 def get(id):
+    #get token from the request header
+    #decode the token 
+    #verify the hash
+    #if invalid, return 5xx
+    #if valid, get user email from decoded token
+    #id = decodedtoken.email
+    
     user = get_valid_item_by_id(User, id)
+
     return user.to_dict(), 200
 
 @user_bp.route("/<id>", methods=["DELETE"])

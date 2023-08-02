@@ -8,7 +8,7 @@ class Message(db.Model):
     id_recipient = db.Column(db.Integer)
     is_sent = db.Column(db.Boolean, default=False)
     recipient_email = db.Column(db.String(50))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     # user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     # user = db.relationship("User", back_populates="messages")
