@@ -39,7 +39,7 @@ def create_farewell_message():
 
     # Give back our response
     return {
-        "id": new_message.message_id,
+        "id": new_message.id,
         "text_message": new_message.text_message,
         "audio_message": new_message.audio_message,
         "id_recipient": new_message.id_recipient,
