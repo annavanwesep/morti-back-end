@@ -6,7 +6,7 @@ class Message(db.Model):
     text_message = db.Column(db.String(500))
     audio_message = db.Column(db.String(500))
     id_recipient = db.Column(db.Integer)
-    # is_sent = db.Column(db.BooleanProperty)
+    is_sent = db.Column(db.Boolean, default=False)
     recipient_email = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
