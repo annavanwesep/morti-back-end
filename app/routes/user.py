@@ -10,7 +10,7 @@ from app.models.user import User
 user_bp = Blueprint("users", __name__, url_prefix="/users")
 
 @user_bp.route("", methods=['GET']) #Mark suggested using user here instead of id
-def get(id):
+def get():
     #get token from the request header
     #decode the token 
     #verify the hash
