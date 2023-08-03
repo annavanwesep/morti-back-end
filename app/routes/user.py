@@ -9,6 +9,21 @@ from app.models.user import User
 # All routes defined with user_bp start with url_prefix (/users)
 user_bp = Blueprint("users", __name__, url_prefix="/users")
 
+#GET ALL USERS
+@user_bp.route("", methods=['GET'])
+def handle_users():
+    user_query = request.args.get("users")
+    if user_query:
+        users = User.query.filter_by(user=user_query)
+    else:
+        users = User.query.all()
+
+    all_users_response = []
+    for user in users :
+        all_users_response.append(user.to_dict())
+    return jsonify(all_users_response), 200
+
+
 #GET A SINGLE USER
 @user_bp.route("/<id>", methods=['GET'])
 def user(id):
