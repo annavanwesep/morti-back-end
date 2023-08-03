@@ -32,8 +32,8 @@ def create_app():
     app.register_blueprint(dashboard_bp)
 
     # add our google blueprint
-    from app.routes.google import google_bp
-    app.register_blueprint(google_bp)
+    # from app.routes.google import google_bp
+    # app.register_blueprint(google_bp)
     
     # add our new User blueprint
     from app.routes.user import user_bp
