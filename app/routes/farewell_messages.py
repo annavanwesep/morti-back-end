@@ -8,19 +8,7 @@ from app.routes.routes_helper import get_valid_item_by_id
 
 farewell_messages_bp = Blueprint("farewell messages", __name__, url_prefix="/farewell_messages")
 
-#GET ALL FAREWELL MESSAGES
-@farewell_messages_bp.route("", methods=['GET'])
-def handle_farewell_messages():
-    message_query = request.args.get("messages")
-    if message_query:
-        messages = Message.query.filter_by(message=message_query)
-    else:
-        messages = Message.query.all()
 
-    farewell_messages_response = []
-    for message in messages :
-        farewell_messages_response.append(message.to_dict())
-    return jsonify(farewell_messages_response), 200
 
 #GET A SINGLE MESSAGE
 @farewell_messages_bp.route("/<message_id>", methods=['GET'])
