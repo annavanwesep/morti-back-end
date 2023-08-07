@@ -90,7 +90,6 @@ def my_profile(email):
     user = User.query.filter_by(email=email).first()
 
     response_body= {
-        "name": "Morti Web App",
         "about": "Hello {user.first_name}! Send Farewells",
         "id": user.id,
         "email": user.email

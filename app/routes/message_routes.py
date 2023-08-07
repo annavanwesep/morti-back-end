@@ -6,9 +6,9 @@ from app.models.user import User
 from app.models.message import Message
 from app.routes.routes_helper import get_valid_item_by_id
 
-farewell_messages_bp = Blueprint("farewell messages", __name__, url_prefix="/farewell_messages")
+messages_bp = Blueprint("farewell messages", __name__, url_prefix="/farewell_messages")
 #get  all farewell messages
-@farewell_messages_bp.route("", methods=['GET'])
+@messages_bp.route("", methods=['GET'])
 def handle_farewell_messages():
     message_query = request.args.get("messages")
     if message_query:
@@ -22,13 +22,13 @@ def handle_farewell_messages():
     return jsonify(farewell_messages_response), 200
 
 #get single message
-@farewell_messages_bp.route("/<message_id>", methods=['GET'])
+@messages_bp.route("/<message_id>", methods=['GET'])
 def get_one_message(message_id):
     message = get_valid_item_by_id(Message, message_id)
     return message.to_dict(), 200
 
 # CREATE A NEW FAREWELL MESSAGE
-@farewell_messages_bp.route("", methods=['POST'])
+@messages_bp.route("", methods=['POST'])
 def create_farewell_message():
     request_body = request.get_json()
     new_message = Message.from_dict(request_body)
@@ -48,7 +48,7 @@ def create_farewell_message():
     
 
 # DELETE ONE FAREWELL MESSAGE
-@farewell_messages_bp.route("/<message_id>/delete", methods=["DELETE"])
+@messages_bp.route("/<message_id>/delete", methods=["DELETE"])
 def delete_one_message(message_id):
     message_to_delete = get_valid_item_by_id(Message, message_id)
 
