@@ -38,10 +38,10 @@ def create_app(test_config=None):
     from app.models.user import User
 
     #import blueprints
-    from .routes.auth_routes import auth_bp
-    app.register_blueprint(auth_bp)
+    from .routes.user import user_bp
+    app.register_blueprint(user_bp)
 
-    from .routes.message_routes import message_bp
+    from .routes.messages import messages_bp
     app.register_blueprint(message_bp)
 
     return app
