@@ -27,14 +27,6 @@ def refresh_expiring_jwts(response):
         # Case where there is not a valid JWT. Just return the original respone
         return response
 
-@user_bp.route("/<user_id>", methods=["DELETE"])
-def delete_one_user(email):
-    user_to_delete = get_valid_item_by_id(User, email)
-
-    db.session.delete(user_to_delete)
-    db.session.commit()
-
-    return f"User {user_to_delete.message} is deleted!", 200
 
 # CREATE A NEW USER
 @user_bp.route("/register", methods=["POST"])
@@ -62,6 +54,57 @@ def register_user():
         "first_name": new_user.first_name,
         "msg": "Account sucessfully created"
     }), 201
+
+#Register using email and password
+@user_bp.route("/login", methods=["POST"])
+def login_user():
+    email = request.json["email"]
+    password = request.json["password"]
+
+    user = User.query.filter_by(email=email).first()
+
+    if user is None:
+        return jsonify({"error": "Unauthorized"}), 401 
     
+    if not bcrypt.check_password_hash(user.password, password):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    return jsonify({
+        "id": user.id,
+        "email": user.email
+    }), 200
+
+#To logout a user and revoke token 
+@user_bp.route("/logout", methods=["POST"])
+def logout():
+    response = jsonify({"msg":"logout successful"})
+    unset_jwt_cookies(response)
+    return response
+
+@user_bp.route("/profile/<email>")
+@jwt_required()
+def my_profile(email):
+    if not email:
+        return jsonify({"error":"Unauthorized Access"}), 401
+    
+    user = User.query.filter_by(email=email).first()
+
+    response_body= {
+        "name": "Morti Web App",
+        "about": "Hello {user.first_name}! Send Farewells",
+        "id": user.id,
+        "email": user.email
+    }
+    return response_body
+
+#Not sure how to delete user once created     
+# @user_bp.route("/<user_id>", methods=["DELETE"])
+# def delete_one_user(email):
+#     user_to_delete = get_valid_item_by_id(User, email)
+
+#     db.session.delete(user_to_delete)
+#     db.session.commit()
+
+#     return f"User {user_to_delete.message} is deleted!", 200
 
 
