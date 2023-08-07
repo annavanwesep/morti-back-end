@@ -8,6 +8,9 @@ class User(db.Model):
     password = db.Column(db.Text, nulllable=False)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
+
+    #one user can create many messages
+    messages = db.relationship("Message", back_populates="user")
     
     def to_dict(self):
         return {

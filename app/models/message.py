@@ -1,24 +1,25 @@
 from app import db 
 
 class Message(db.Model):
-    message_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(50))
     text_message = db.Column(db.String(500))
-    audio_message = db.Column(db.String(500))
-    id_recipient = db.Column(db.Integer)
-    is_sent = db.Column(db.BooleanProperty)
-    recipient_email = db.Column(db.String(50))
+    audio_message = db.Column(db.String)
+    recipient_email = db.Column(db.String(345))
+    recipient_id = db.Column(db.Integer)
+    is_sent = db.Column(db.Boolean, default=False)
     
-    user_email = db.Column(db.String, db.ForeignKey('user.email'))
+    #many messages can belong to one user
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship("User", back_populates="messages")
     
     def to_dict(self):
         return {
-            "message_id": self.message_id, 
+            "message_id": self.id, 
             "title": self.title,
             "text_message": self.text_message,
             "audio_message": self.audio_message,
-            "id_recipient": self.id_recipient,
+            "id_recipient": self.recipient_id,
             "is_sent": self.is_sent,
             "recipient_email": self.recipient_email
         }
