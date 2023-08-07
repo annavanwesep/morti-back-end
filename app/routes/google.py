@@ -31,11 +31,11 @@ def google_callback():
         # token_request = google.auth.transport.requests.Request(session=cached_session)
 
         id_info = id_token.verify_oauth2_token(
-            id_token=credentials._id_token,
+            id_token=credentials.id_token,
             request=token_request,
-            audience=os.environ("GOOGLE_CLIENT_ID")
+            audience=os.environ["GOOGLE_CLIENT_ID"]
         )
-        print(id_info)
+        print(id_token)
     except ValueError:
         return jsonify({"success": False, "error": "Invalid token"}), 400
 
