@@ -3,16 +3,17 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
 class User(db.Model):
-    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.String(100))
-    # password = db.Column(db.String(50))
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = db.Column(db.String(345), unique=True)
+    password = db.Column(db.Text, nulllable=False)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
     
     def to_dict(self):
         return {
-            "user_id": self.user_id,
+            "id": self.id,
             "email": self.email,
+            "password": self.password,
             "first_name": self.first_name,
             "last_name": self.last_name
         }
