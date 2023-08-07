@@ -15,11 +15,11 @@ class Message(db.Model):
     
     def to_dict(self):
         return {
-            "message_id": self.id, 
+            "id": self.id, 
             "title": self.title,
             "text_message": self.text_message,
             "audio_message": self.audio_message,
-            "id_recipient": self.recipient_id,
+            "recipient_id": self.recipient_id,
             "is_sent": self.is_sent,
             "recipient_email": self.recipient_email
         }
@@ -30,7 +30,7 @@ class Message(db.Model):
             title=message_details["title"],
             text_message=message_details["text_message"],
             audio_message=message_details["audio_message"],
-            id_recipient=message_details["id_recipient"],
+            recipient_id=message_details["recipient_id"],
             is_sent=message_details["is_sent"],
             recipient_email=message_details["recipient_email"]
         )
