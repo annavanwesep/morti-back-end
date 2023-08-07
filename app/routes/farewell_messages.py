@@ -58,3 +58,12 @@ def delete_one_message(message_id):
 
     return f"Message {message_to_delete} is deleted!", 200
 
+#MARK ALL MESSAGES AS IS_SENT TO TRUE PATCH
+@farewell_messages_bp.route("/<message_id>/is_deceased", methods=["PATCH"])
+def patch_messages(message_id):
+    message_to_update = get_valid_item_by_id(Message, message_id)
+    
+    # update card likes count to increment by 1.
+    message_to_update.is_sent = True
+    db.session.commit()
+    return message_to_update.to_dict(), 200
