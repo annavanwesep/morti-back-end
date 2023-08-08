@@ -119,4 +119,45 @@ def my_profile(email):
 
 #     return f"User {user_to_delete.message} is deleted!", 200
 
+#GET ALL USERS
+@user_bp.route("", methods=['GET'])
+def handle_users():
+    user_query = request.args.get("users")
+    if user_query:
+        users = User.query.filter_by(user=user_query)
+    else:
+        users = User.query.all()
 
+    all_users_response = []
+    for user in users :
+        all_users_response.append(user.to_dict())
+    return jsonify(all_users_response), 200
+
+
+#GET A SINGLE USER
+@user_bp.route("/<id>", methods=['GET'])
+def user(id):
+    board = get_valid_item_by_id(User, id)
+    return board.to_dict(), 200
+
+
+@user_bp.route("", methods=['GET']) #Mark suggested using user here instead of id
+def get():
+    #get token from the request header
+    #decode the token 
+    #verify the hash
+    #if invalid, return 5xx
+    #if valid, get user email from decoded token
+    #id = decodedtoken.email
+    
+    user = get_valid_item_by_id(User, id)
+
+    return user.to_dict(), 200
+
+@user_bp.route("/<id>", methods=["DELETE"])
+def delete(id):
+    user = get_valid_item_by_id(User, id)
+    db.session.delete(user)
+    db.session.commit()
+
+    return f"{user.first_name} is deleted!", 200
