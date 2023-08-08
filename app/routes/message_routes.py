@@ -11,11 +11,11 @@ messages_bp = Blueprint("farewell messages", __name__, url_prefix="/farewell_mes
 
 # CREATE A NEW FAREWELL MESSAGE
 @messages_bp.route("", methods=['POST'])
-@jwt_required(optional=True)
+@jwt_required()
 def create_farewell_message():
-    email = get_jwt_identity()
+    current_user_email = get_jwt_identity()
     try:
-        current_user = User.query.filter_by(email=email).first()
+        current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
         print("ERROR", str(e))
         return {"Error": "An error ocurred when retriveing current user"}
@@ -54,8 +54,9 @@ def create_farewell_message():
         "msg": "Successfully created"
     }, 201
 
-#get  all farewell messages
+#Get all farewell messages created by the current signed in user
 @messages_bp.route("", methods=['GET'])
+@jwt_required(optional=True)
 def handle_farewell_messages():
     message_query = request.args.get("messages")
     if message_query:
