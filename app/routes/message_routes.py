@@ -5,7 +5,6 @@ from datetime import datetime, timedelta, timezone
 
 from app.models.user import User
 from app.models.message import Message
-y
 
 messages_bp = Blueprint("farewell messages", __name__, url_prefix="/farewell_messages")
 
@@ -72,10 +71,10 @@ def handle_farewell_messages():
         farewell_messages_response.append(message.to_dict())
     return jsonify(farewell_messages_response), 200
 
-# DELETE ONE FAREWELL MESSAGE
-@messages_bp.route("/<message_id>", methods=["DELETE"])
+#Mark selected message by id as IS_SENT to TRUE 
+@messages_bp.route("/<id>/is_deceased", methods=["PATCH"])
 @jwt_required()
-def delete_one_message(message_id):
+def patch_messages(id):
     current_user_email = get_jwt_identity()
     try:
         current_user = User.query.filter_by(email=current_user_email).first()
@@ -83,7 +82,34 @@ def delete_one_message(message_id):
         print("ERROR", str(e))
         return {"Error": "An error ocurred when retriveing current user"}
     
-    message_to_delete = Message.query.filter_by(user_id=current_user.id, id=message_id).first()
+    message_to_update = Message.query.filter_by(user_id=current_user.id, id=id).first()
+    print("Query message:", message_to_update)
+    
+    if message_to_update is None:
+        return {"Error": "Message not found"}, 404
+    
+    try:
+        message_to_update.is_sent = True
+        db.session.commit()
+        return f"Message {id} has been updated!", 200
+    except Exception as e:
+        print("ERROR", str(e))
+        db.session.rollback()
+        return {"Error": "An error occurred while updating the message"}, 500
+
+    
+# DELETE ONE FAREWELL MESSAGE
+@messages_bp.route("/<id>", methods=["DELETE"])
+@jwt_required()
+def delete_one_message(id):
+    current_user_email = get_jwt_identity()
+    try:
+        current_user = User.query.filter_by(email=current_user_email).first()
+    except Exception as e:
+        print("ERROR", str(e))
+        return {"Error": "An error ocurred when retriveing current user"}
+    
+    message_to_delete = Message.query.filter_by(user_id=current_user.id, id=id).first()
     print("Query message:", message_to_delete)
     
     if message_to_delete is None:
@@ -92,7 +118,7 @@ def delete_one_message(message_id):
     try:
         db.session.delete(message_to_delete)
         db.session.commit()
-        return f"Message {message_id} is deleted!", 200
+        return f"Message {id} is deleted!", 200
     except Exception as e:
         print("ERROR", str(e))
         db.session.rollback()
