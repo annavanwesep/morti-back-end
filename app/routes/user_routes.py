@@ -3,10 +3,11 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, unset_jwt_cookies, jwt_required, get_jwt, get_jwt_identity 
 from datetime import datetime, timedelta, timezone
 from app.models.user import User
+from app.routes.routes_helper import get_valid_item_by_id
 from app import db
 
 # No url prefix for register/login users 
-user_bp = Blueprint("users", __name__)
+user_bp = Blueprint("users", __name__, url_prefix="/")
 
 bcrypt = Bcrypt()
 
