@@ -18,9 +18,10 @@ class Message(db.Model):
             "title": self.title,
             "text_message": self.text_message,
             "audio_message": self.audio_message,
+            "recipient_email": self.recipient_email,
             "recipient_id": self.recipient_id,
             "is_sent": self.is_sent,
-            "recipient_email": self.recipient_email
+            "user_id": self.user_id
         }
     
     @classmethod
