@@ -1,14 +1,11 @@
 from flask import Blueprint, jsonify, abort, make_response, request
 from app import db
 from sqlalchemy import inspect, asc
-
-from app.models.user import User
-from app.models.message import Message
 from app.routes.routes_helper import get_valid_item_by_id
+from app.models.message import Message
 
 farewell_messages_bp = Blueprint("farewell messages", __name__, url_prefix="/farewell_messages")
 
-farewell_messages_bp = Blueprint("farewell messages", __name__, url_prefix="/farewell_messages")
 #get  all farewell messages
 @farewell_messages_bp.route("", methods=['GET'])
 def handle_farewell_messages():
