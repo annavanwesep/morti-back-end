@@ -27,24 +27,6 @@ def get_one_message(message_id):
     message = get_valid_item_by_id(Message, message_id)
     return message.to_dict(), 200
 
-# CREATE A NEW FAREWELL MESSAGE
-@messages_bp.route("", methods=['POST'])
-def create_farewell_message():
-    request_body = request.get_json()
-    new_message = Message.from_dict(request_body)
-
-    db.session.add(new_message)
-    db.session.commit()
-
-    # Give back our response
-    return {
-        "id": new_message.message_id,
-        "text_message": new_message.text_message,
-        "audio_message": new_message.audio_message,
-        "id_recipient": new_message.id_recipient,
-        # "recipient_email": new_message.recipient_email,
-        "msg": "Successfully created"
-    }, 201
     
 
 # DELETE ONE FAREWELL MESSAGE

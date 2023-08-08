@@ -1,8 +1,7 @@
 from app import db 
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
 
 class User(db.Model):
+    __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(345), unique=True)
     password = db.Column(db.Text, nullable=False)
@@ -10,7 +9,7 @@ class User(db.Model):
     last_name = db.Column(db.String(100))
 
     #one user can create many messages, refactor to use backref
-    messages = db.relationship("Message", back_populates="user")
+    messages = db.relationship("Message", backref="user", lazy=True)
     
     def to_dict(self):
         return {
