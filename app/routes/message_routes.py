@@ -1,12 +1,59 @@
-from flask import Blueprint, jsonify, abort, make_response, request
+from flask import Blueprint, request, jsonify
 from app import db
-from sqlalchemy import inspect, asc
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity 
+from datetime import datetime, timedelta, timezone
 
 from app.models.user import User
 from app.models.message import Message
-from app.routes.routes_helper import get_valid_item_by_id
+
 
 messages_bp = Blueprint("farewell messages", __name__, url_prefix="/farewell_messages")
+
+# CREATE A NEW FAREWELL MESSAGE
+@messages_bp.route("", methods=['POST'])
+@jwt_required(optional=True)
+def create_farewell_message():
+    email = get_jwt_identity()
+    try:
+        current_user = User.query.filter_by(email=email).first()
+    except Exception as e:
+        print("ERROR", str(e))
+        return {"Error": "An error ocurred when retriveing current user"}
+    request_body = request.get_json()
+    
+    if "title" not in request_body or "text_message" not in request_body or "audio_message" not in request_body or "recipient_email" not in request_body:
+        return {"error": "All fields are required"}, 400 
+    
+    recipient_email = request_body["recipient_email"]
+    recipient = User.query.filter_by(email=recipient_email).first()
+    try:
+        new_message = Message(
+        title=request_body["title"],
+        text_message=request_body["text_message"],
+        audio_message=request_body["audio_message"],
+        recipient_email=recipient.email,
+        recipient_id=recipient.id,
+        user_id=current_user.id
+    )
+    except Exception as e:
+        print("Error:", str(e))
+        return {"error": "An error occurred while creating the message"}, 500
+
+    db.session.add(new_message)
+    db.session.commit()
+
+    # Give back our response
+    return {
+        "id": new_message.id,
+        "title": new_message.title,
+        "text_message": new_message.text_message,
+        "audio_message": new_message.audio_message,
+        "recipient_email": new_message.recipient_email,
+        "recipient_id": new_message.recipient_id,
+        "user_id": new_message.user_id,
+        "msg": "Successfully created"
+    }, 201
+
 #get  all farewell messages
 @messages_bp.route("", methods=['GET'])
 def handle_farewell_messages():

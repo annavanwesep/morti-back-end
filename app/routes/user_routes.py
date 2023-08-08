@@ -95,7 +95,7 @@ def logout():
     return response
 
 @user_bp.route("/profile/<email>")
-@jwt_required()
+@jwt_required
 def my_profile(email):
     if not email:
         return jsonify({"error":"Unauthorized Access"}), 401
