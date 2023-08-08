@@ -10,7 +10,7 @@ class User(db.Model):
     last_name = db.Column(db.String(100))
 
     #one user can create many messages, refactor to use backref
-    messages = db.relationship("Message", back_populates="user")
+    messages = db.relationship("Message", backref="user", lazy=True)
     
     def to_dict(self):
         return {
