@@ -27,6 +27,19 @@ def refresh_expiring_jwts(response):
         # Case where there is not a valid JWT. Just return the original respone
         return response
 
+@user_bp.route('/token', methods=["POST"])
+def create_token():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+    
+    user = User.query.filter_by(email=email).first()
+
+    if not user or not bcrypt.check_password_hash(user.password, password):
+        return {"msg": "Wrong email or password"}, 401
+        
+    access_token = create_access_token(identity=email)
+    return {'access_token':access_token}
+    
 
 # CREATE A NEW USER
 @user_bp.route("/register", methods=["POST"])
