@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(345), unique=True)
-    password = db.Column(db.Text, nulllable=False)
+    password = db.Column(db.Text, nullable=False)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
 
