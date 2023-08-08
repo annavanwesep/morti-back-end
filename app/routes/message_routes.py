@@ -22,9 +22,9 @@ def handle_farewell_messages():
     return jsonify(farewell_messages_response), 200
 
 #get single message
-@messages_bp.route("/<message_id>", methods=['GET'])
-def get_one_message(message_id):
-    message = get_valid_item_by_id(Message, message_id)
+@messages_bp.route("/<id>", methods=['GET'])
+def get_one_message(id):
+    message = get_valid_item_by_id(Message, id)
     return message.to_dict(), 200
 
 # CREATE A NEW FAREWELL MESSAGE
@@ -42,15 +42,15 @@ def create_farewell_message():
         "text_message": new_message.text_message,
         "audio_message": new_message.audio_message,
         "recipient_id": new_message.recipient_id,
-        # "recipient_email": new_message.recipient_email,
+        "recipient_email": new_message.recipient_email,
         "msg": "Successfully created"
     }, 201
     
 
 # DELETE ONE FAREWELL MESSAGE
-@messages_bp.route("/<message_id>/delete", methods=["DELETE"])
-def delete_one_message(message_id):
-    message_to_delete = get_valid_item_by_id(Message, message_id)
+@messages_bp.route("/<id>/delete", methods=["DELETE"])
+def delete_one_message(id):
+    message_to_delete = get_valid_item_by_id(Message, id)
 
     db.session.delete(message_to_delete)
     db.session.commit()
