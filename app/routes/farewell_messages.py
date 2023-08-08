@@ -24,9 +24,9 @@ def handle_farewell_messages():
     return jsonify(farewell_messages_response), 200
 
 #GET A SINGLE MESSAGE
-@farewell_messages_bp.route("/<message_id>", methods=['GET'])
-def get_one_message(message_id):
-    message = get_valid_item_by_id(Message, message_id)
+@farewell_messages_bp.route("/<id>", methods=['GET'])
+def get_one_message(id):
+    message = get_valid_item_by_id(Message, id)
     return message.to_dict(), 200
 
 # CREATE A NEW FAREWELL MESSAGE
@@ -50,9 +50,9 @@ def create_farewell_message():
     
 
 # DELETE ONE FAREWELL MESSAGE
-@farewell_messages_bp.route("/<message_id>/delete", methods=["DELETE"])
-def delete_one_message(message_id):
-    message_to_delete = get_valid_item_by_id(Message, message_id)
+@farewell_messages_bp.route("/<id>/delete", methods=["DELETE"])
+def delete_one_message(id):
+    message_to_delete = get_valid_item_by_id(Message, id)
 
     db.session.delete(message_to_delete)
     db.session.commit()
@@ -60,9 +60,9 @@ def delete_one_message(message_id):
     return f"Message {message_to_delete} is deleted!", 200
 
 #MARK ALL MESSAGES AS IS_SENT TO TRUE PATCH
-@farewell_messages_bp.route("/<message_id>/is_deceased", methods=["PATCH"])
-def patch_messages(message_id):
-    message_to_update = get_valid_item_by_id(Message, message_id)
+@farewell_messages_bp.route("/<id>/is_deceased", methods=["PATCH"])
+def patch_messages(id):
+    message_to_update = get_valid_item_by_id(Message, id)
     
     # update card likes count to increment by 1.
     message_to_update.is_sent = True
