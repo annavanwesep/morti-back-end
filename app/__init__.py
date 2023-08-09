@@ -36,7 +36,8 @@ def create_app(test_config=None):
 
     #import models
     from app.models.user import User
-
+    from app.models.message import Message
+    
     #import blueprints
     from .routes.user_routes import user_bp
     app.register_blueprint(user_bp)
