@@ -8,11 +8,9 @@ class Message(db.Model):
     recipient_email = db.Column(db.String(345))
     recipient_id = db.Column(db.Integer)
     is_sent = db.Column(db.Boolean, default=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
     #many messages can belong to one user
-    # user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    # user = db.relationship("User", back_populates="messages")
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     
     def to_dict(self):
         return {
@@ -20,9 +18,10 @@ class Message(db.Model):
             "title": self.title,
             "text_message": self.text_message,
             "audio_message": self.audio_message,
+            "recipient_email": self.recipient_email,
             "recipient_id": self.recipient_id,
             "is_sent": self.is_sent,
-            "recipient_email": self.recipient_email
+            "user_id": self.user_id
         }
     
     @classmethod
