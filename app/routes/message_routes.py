@@ -53,7 +53,7 @@ def create_farewell_message():
         "msg": "Successfully created"
     }, 201
 
-#Get all messages from the current signed in user 
+#Get all messages that the current signed in user has created 
 @messages_bp.route("", methods=['GET'])
 @jwt_required()
 def handle_farewell_messages():
@@ -71,7 +71,8 @@ def handle_farewell_messages():
         farewell_messages_response.append(message.to_dict())
     return jsonify(farewell_messages_response), 200
 
-#Mark selected message by id as IS_SENT to TRUE 
+#Mark selected message by id as IS_SENT to TRUE
+# NOT CORRECT YET: NEED SELF REFERENTIAL TABLE TO LINK USERS 
 @messages_bp.route("/<id>/is_deceased", methods=["PATCH"])
 @jwt_required()
 def patch_messages(id):
