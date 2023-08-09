@@ -126,3 +126,21 @@ def delete_one_message(id):
         db.session.rollback()
         return {"Error": "An error occurred while deleting the message"}, 500
 
+#GET ALL MESSAGES ADDRESSED TO THE USER/RECEIVED MESSAGES
+@messages_bp.route("/recieved", methods=['GET'])
+@jwt_required()
+def handle_recieved_messages():
+    current_user_email = get_jwt_identity()
+    try:
+        current_user = User.query.filter_by(email=current_user_email).first()
+    except Exception as e:
+        print("ERROR", str(e))
+        return {"Error": "An error ocurred when retriveing current user"}
+    
+    #filter by is_sent True when linked users are created
+    messages = Message.query.filter_by(recipient_id=current_user.id)
+    
+    farewell_messages_response = []
+    for message in messages :
+        farewell_messages_response.append(message.to_dict())
+    return jsonify(farewell_messages_response), 200
