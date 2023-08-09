@@ -94,18 +94,23 @@ def logout():
     unset_jwt_cookies(response)
     return response
 
-@user_bp.route("/profile/<email>")
+@user_bp.route("/profile")
 @jwt_required
-def my_profile(email):
-    if not email:
-        return jsonify({"error":"Unauthorized Access"}), 401
+def my_profile():
+    current_user_email = get_jwt_identity()
+    try:
+        current_user = User.query.filter_by(email=current_user_email).first()
+    except Exception as e:
+        print("ERROR", str(e))
+        return {"Error": "An error ocurred when retriveing current user"}
     
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(email=current_user_email).first()
 
     response_body= {
         "about": "Hello {user.first_name}! Send Farewells",
         "id": user.id,
-        "email": user.email
+        "email": user.email,
+        "firs_name": user.first_name
     }
     return response_body
 
