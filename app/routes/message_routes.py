@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from app.models.user import User
 from app.models.message import Message
 
-messages_bp = Blueprint("farewell messages", __name__, url_prefix="/farewell_messages")
+messages_bp = Blueprint("messages", __name__, url_prefix="/messages")
 
 # CREATE A NEW FAREWELL MESSAGE
 @messages_bp.route("", methods=['POST'])
@@ -74,7 +74,7 @@ def handle_farewell_messages():
 #Mark selected message by id as IS_SENT to TRUE
 #AS IS, THIS ROUTE MARKS YOUR **OWN** MESSAGES TO BE SENT, INSTEAD OF YOUR TRUSTED PERSON 
 # NOT CORRECT YET: NEED SELF REFERENTIAL TABLE TO LINK USERS 
-@messages_bp.route("/<id>/is_deceased", methods=["PATCH"])
+@messages_bp.route("/<id>/expired", methods=["PATCH"])
 @jwt_required()
 def patch_messages(id):
     current_user_email = get_jwt_identity()
