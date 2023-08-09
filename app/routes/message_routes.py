@@ -72,6 +72,7 @@ def handle_farewell_messages():
     return jsonify(farewell_messages_response), 200
 
 #Mark selected message by id as IS_SENT to TRUE
+#AS IS, THIS ROUTE MARKS YOUR **OWN** MESSAGES TO BE SENT, INSTEAD OF YOUR TRUSTED PERSON 
 # NOT CORRECT YET: NEED SELF REFERENTIAL TABLE TO LINK USERS 
 @messages_bp.route("/<id>/is_deceased", methods=["PATCH"])
 @jwt_required()
