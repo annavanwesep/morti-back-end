@@ -71,7 +71,7 @@ def handle_farewell_messages():
         farewell_messages_response.append(message.to_dict())
     return jsonify(farewell_messages_response), 200
 
-#Mark selected message by id as IS_SENT to TRUE
+#Selected message by id as IS_SENT to TRUE
 #AS IS, THIS ROUTE MARKS YOUR **OWN** MESSAGES TO BE SENT, INSTEAD OF YOUR TRUSTED PERSON 
 # NOT CORRECT YET: NEED SELF REFERENTIAL TABLE TO LINK USERS 
 @messages_bp.route("/<id>/expired", methods=["PATCH"])
@@ -111,6 +111,7 @@ def delete_one_message(id):
         print("ERROR", str(e))
         return {"Error": "An error ocurred when retriveing current user"}
     
+    #Filter_by might be problematic, use Filter with multiple 
     message_to_delete = Message.query.filter_by(user_id=current_user.id, id=id).first()
     print("Query message:", message_to_delete)
     
@@ -127,9 +128,9 @@ def delete_one_message(id):
         return {"Error": "An error occurred while deleting the message"}, 500
 
 #GET ALL MESSAGES ADDRESSED TO THE USER/RECEIVED MESSAGES
-@messages_bp.route("/recieved", methods=['GET'])
+@messages_bp.route("/received", methods=['GET'])
 @jwt_required()
-def handle_recieved_messages():
+def handle_received_messages():
     current_user_email = get_jwt_identity()
     try:
         current_user = User.query.filter_by(email=current_user_email).first()

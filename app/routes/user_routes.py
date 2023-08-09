@@ -3,10 +3,11 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, unset_jwt_cookies, jwt_required, get_jwt, get_jwt_identity 
 from datetime import datetime, timedelta, timezone
 from app.models.user import User
+from app.routes.helper_routes import get_valid_item_by_id
 from app import db
 
 # No url prefix for register/login users 
-user_bp = Blueprint("users", __name__)
+user_bp = Blueprint("users", __name__, url_prefix="/")
 
 bcrypt = Bcrypt()
 
@@ -124,4 +125,45 @@ def my_profile():
 
 #     return f"User {user_to_delete.message} is deleted!", 200
 
+#GET ALL USERS
+@user_bp.route("", methods=['GET'])
+def handle_users():
+    user_query = request.args.get("users")
+    if user_query:
+        users = User.query.filter_by(user=user_query)
+    else:
+        users = User.query.all()
 
+    all_users_response = []
+    for user in users :
+        all_users_response.append(user.to_dict())
+    return jsonify(all_users_response), 200
+
+
+#GET A SINGLE USER
+@user_bp.route("/<id>", methods=['GET'])
+def user(id):
+    board = get_valid_item_by_id(User, id)
+    return board.to_dict(), 200
+
+
+@user_bp.route("", methods=['GET']) #Mark suggested using user here instead of id
+def get():
+    #get token from the request header
+    #decode the token 
+    #verify the hash
+    #if invalid, return 5xx
+    #if valid, get user email from decoded token
+    #id = decodedtoken.email
+    
+    user = get_valid_item_by_id(User, id)
+
+    return user.to_dict(), 200
+
+@user_bp.route("/<id>", methods=["DELETE"])
+def delete(id):
+    user = get_valid_item_by_id(User, id)
+    db.session.delete(user)
+    db.session.commit()
+
+    return f"{user.first_name} is deleted!", 200
