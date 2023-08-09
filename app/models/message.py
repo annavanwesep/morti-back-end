@@ -1,6 +1,7 @@
 from app import db 
 
 class Message(db.Model):
+    __tablename__ = "messages"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(50))
     text_message = db.Column(db.String(500))
