@@ -33,7 +33,6 @@ def create_app(test_config=None):
     migrate.init_app(app, db)
     bcrypt.init_app(app)
     jwt.init_app(app)
-    load_dotenv()
 
     #import models
     from app.models.user import User
@@ -45,5 +44,8 @@ def create_app(test_config=None):
 
     from .routes.message_routes import messages_bp
     app.register_blueprint(messages_bp)
+
+    from .routes.trust_routes import trust_bp
+    app.register_blueprint(trust_bp)
 
     return app
