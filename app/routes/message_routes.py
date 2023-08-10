@@ -17,7 +17,7 @@ def create_farewell_message():
         current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
         print("ERROR", str(e))
-        return {"Error": "An error ocurred when retriveing current user"}
+        return {"Error": "An error ocurred when retrieving current user"}
     request_body = request.get_json()
     
     if "title" not in request_body or "text_message" not in request_body or "audio_message" not in request_body or "recipient_email" not in request_body:
