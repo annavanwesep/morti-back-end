@@ -17,7 +17,7 @@ def create_farewell_message():
         current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
         print("ERROR", str(e))
-        return {"Error": "An error ocurred when retriveing current user"}
+        return {"error": "An error ocurred when retriveing current user"}, 404
     request_body = request.get_json()
     
     if "title" not in request_body or "text_message" not in request_body or "audio_message" not in request_body or "recipient_email" not in request_body:
@@ -35,7 +35,7 @@ def create_farewell_message():
         user_id=current_user.id
     )
     except Exception as e:
-        print("Error:", str(e))
+        print("error:", str(e))
         return {"error": "An error occurred while creating the message"}, 500
 
     db.session.add(new_message)
@@ -62,7 +62,7 @@ def handle_farewell_messages():
         current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
         print("ERROR", str(e))
-        return {"Error": "An error ocurred when retriveing current user"}
+        return {"error": "An error ocurred when retriveing current user"}, 404
     
     messages = Message.query.filter_by(user_id=current_user.id)
     
@@ -82,13 +82,13 @@ def patch_messages(id):
         current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
         print("ERROR", str(e))
-        return {"Error": "An error ocurred when retriveing current user"}
+        return {"error": "An error ocurred when retriveing current user"}, 404
     
     message_to_update = Message.query.filter_by(user_id=current_user.id, id=id).first()
     print("Query message:", message_to_update)
     
     if message_to_update is None:
-        return {"Error": "Message not found"}, 404
+        return {"error": "Message not found"}, 404
     
     try:
         message_to_update.is_sent = True
@@ -97,7 +97,7 @@ def patch_messages(id):
     except Exception as e:
         print("ERROR", str(e))
         db.session.rollback()
-        return {"Error": "An error occurred while updating the message"}, 500
+        return {"error": "An error occurred while updating the message"}, 500
 
     
 # DELETE ONE FAREWELL MESSAGE
@@ -109,14 +109,14 @@ def delete_one_message(id):
         current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
         print("ERROR", str(e))
-        return {"Error": "An error ocurred when retriveing current user"}
+        return {"error": "An error ocurred when retriveing current user"}, 404
     
     #Filter_by might be problematic, use Filter with multiple 
     message_to_delete = Message.query.filter_by(user_id=current_user.id, id=id).first()
     print("Query message:", message_to_delete)
     
     if message_to_delete is None:
-        return {"Error": "Message not found"}, 404
+        return {"error": "Message not found"}, 404
 
     try:
         db.session.delete(message_to_delete)
@@ -125,7 +125,7 @@ def delete_one_message(id):
     except Exception as e:
         print("ERROR", str(e))
         db.session.rollback()
-        return {"Error": "An error occurred while deleting the message"}, 500
+        return {"error": "An error occurred while deleting the message"}, 500
 
 #GET ALL MESSAGES ADDRESSED TO THE USER/RECEIVED MESSAGES
 @messages_bp.route("/received", methods=['GET'])
@@ -136,7 +136,7 @@ def handle_received_messages():
         current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
         print("ERROR", str(e))
-        return {"Error": "An error ocurred when retriveing current user"}
+        return {"error": "An error ocurred when retriveing current user"}, 404 
     
     #filter by is_sent True when linked users are created
     messages = Message.query.filter_by(recipient_id=current_user.id)

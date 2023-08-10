@@ -8,24 +8,25 @@ from app.models.message import Message
 
 trust_bp = Blueprint('trust', __name__, url_prefix="/trust")
 
+#As a signed in user, add a person who you trust by email 
 @trust_bp.route("", methods=['POST'])
 @jwt_required()
-def add_trusted_user(user_id):
+def add_trusted_user():
+    current_user_email = get_jwt_identity()
     try:
-        trusted_user = User.query.get(user_id)
-        if not trusted_user:
-            return jsonify({'error': 'User not found'}), 404
-
-        current_user = get_current_user()  # Implement a function to get the current logged-in user
-
-        if current_user == trusted_user:
-            return jsonify({'error': 'You cannot trust yourself'}), 400
-
-        current_user.trusted_users.append(trusted_user)
-        db.session.commit()
-
-        return jsonify({'message': f'You now trust {trusted_user.username}'}), 201
-
+        current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': 'An error occurred'}), 500
+        print("ERROR", str(e))
+        return {"error": "An error ocurred when retriveing current user"}, 404
+
+    request_body = request.get_json()
+
+    if "email" not in request_body:
+        return {"error": "All fields are required"}, 400
+    trusted_user = User.query.filter_by(email=request_body["email"]).first()
+    if not trusted_user:
+        return {"error": "User not found"}, 404
+    
+    current_user.trusted_users.append(trusted_user)
+    db.session.commit()
+    return jsonify({'message': f'You now trust {trusted_user.first_name}'}), 201
