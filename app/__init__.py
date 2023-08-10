@@ -33,6 +33,7 @@ def create_app(test_config=None):
     migrate.init_app(app, db)
     bcrypt.init_app(app)
     jwt.init_app(app)
+    load_dotenv()
 
     #import models
     from app.models.user import User
