@@ -32,7 +32,7 @@ def add_trusted_user():
     return jsonify({'message': f'You now trust {trusted_user.first_name}'}), 201
 
 #Get all the people the current user trusts 
-@trust_bp.route("", methods=["GET"])
+@trust_bp.route("/trustees", methods=["GET"])
 @jwt_required()
 def get_all_trusted_people():
     current_user_email = get_jwt_identity()
@@ -45,10 +45,31 @@ def get_all_trusted_people():
     trusted_people = current_user.trusted_users.all()
 
     trusted_people_response = []
-    for person in trusted_people :
+    for user in trusted_people :
         trusted_people_response.append(
-            {"first_name": person.first_name,
-            "last_name": person.last_name,
-            "email": person.email}
+            {"first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email}
         )
     return jsonify(trusted_people_response), 200
+
+#Get all the people who trust the current user
+@trust_bp.route("/trusted_by", methods=['GET'])
+@jwt_required()
+def get_users_trusting_current_user():
+    current_user_email = get_jwt_identity()
+    try:
+        current_user = User.query.filter_by(email=current_user_email).first()
+    except Exception as e:
+        return {"error": "An error occurred while retrieving current user"}, 404
+
+    users_trusting_current_user = User.query.filter(User.trusted_users.contains(current_user)).all()
+
+    trusted_by_response = []
+    for user in users_trusting_current_user :
+        trusted_by_response.append(
+            {"first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email}
+        )
+    return jsonify(trusted_by_response), 200
