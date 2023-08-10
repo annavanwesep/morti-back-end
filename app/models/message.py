@@ -1,7 +1,7 @@
 from app import db 
 
 class Message(db.Model):
-    __tablename__ = "messages" #merge conflict with but haven't connected to render db yet
+    # __tablename__ = "messages" 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(50))
     text_message = db.Column(db.String(500))
