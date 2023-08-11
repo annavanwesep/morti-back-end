@@ -46,11 +46,11 @@ def get_all_trusted_people():
 
     trusted_people_response = []
     for user in trusted_people :
-        trusted_people_response.append(
-            {"first_name": user.first_name,
+        trusted_people_response.append({
+            "id": user.id,
+            "first_name": user.first_name,
             "last_name": user.last_name,
-            "email": user.email}
-        )
+            "email": user.email})
     return jsonify(trusted_people_response), 200
 
 #Get all the people who trust the current user
@@ -73,3 +73,21 @@ def get_users_trusting_current_user():
             "email": user.email}
         )
     return jsonify(trusted_by_response), 200
+
+#Untrust a user
+@trust_bp.route("/<id>", methods=["DELETE"])
+@jwt_required()
+def delete_trusted_user(id):
+    current_user_email = get_jwt_identity()
+    try:
+        current_user = User.query.filter_by(email=current_user_email).first()
+    except Exception as e:
+        return {"error": "An error occurred while retrieving current user"}, 404
+    
+    user_to_untrust = User.query.get(id)
+    if user_to_untrust is None:
+        return {"error": "User not found"}, 404
+
+    current_user.trusted_users.remove(user_to_untrust)
+    db.session.commit()
+    return jsonify({'message': f'You have removed {user_to_untrust.first_name} from trusted users'}), 200
