@@ -7,7 +7,7 @@ from app.routes.helper_routes import get_valid_item_by_id
 from app import db
 
 # No url prefix for register/login users 
-user_bp = Blueprint("users", __name__, url_prefix="/")
+user_bp = Blueprint("users", __name__)
 
 bcrypt = Bcrypt()
 
@@ -95,38 +95,26 @@ def logout():
     unset_jwt_cookies(response)
     return response
 
-@user_bp.route("/profile")
-@jwt_required
+@user_bp.route("/profile", methods=["GET"])
+@jwt_required()
 def my_profile():
     current_user_email = get_jwt_identity()
     try:
         current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
         print("ERROR", str(e))
-        return {"Error": "An error ocurred when retriveing current user"}
-    
-    user = User.query.filter_by(email=current_user_email).first()
+        return {"error": "An error ocurred when retriveing current user"}, 404
 
     response_body= {
-        "about": "Hello {user.first_name}! Send Farewells",
-        "id": user.id,
-        "email": user.email,
-        "firs_name": user.first_name
+        "about": f"Hello {current_user.first_name}! Send Farewells",
+        "id": current_user.id,
+        "email": current_user.email,
+        "first_name": current_user.first_name
     }
-    return response_body
-
-#Not sure how to delete user once created     
-# @user_bp.route("/<user_id>", methods=["DELETE"])
-# def delete_one_user(email):
-#     user_to_delete = get_valid_item_by_id(User, email)
-
-#     db.session.delete(user_to_delete)
-#     db.session.commit()
-
-#     return f"User {user_to_delete.message} is deleted!", 200
+    return jsonify(response_body), 200
 
 #GET ALL USERS
-@user_bp.route("", methods=['GET'])
+@user_bp.route("/users", methods=['GET'])
 def handle_users():
     user_query = request.args.get("users")
     if user_query:
@@ -141,13 +129,14 @@ def handle_users():
 
 
 #GET A SINGLE USER
-@user_bp.route("/<id>", methods=['GET'])
+@user_bp.route("/users/<id>", methods=['GET'])
 def user(id):
     board = get_valid_item_by_id(User, id)
     return board.to_dict(), 200
 
-
-@user_bp.route("", methods=['GET']) #Mark suggested using user here instead of id
+#Clarify the purpose of this route
+#Mark suggested using user here instead of id(?)
+@user_bp.route("/", methods=['GET']) 
 def get():
     #get token from the request header
     #decode the token 
@@ -160,6 +149,7 @@ def get():
 
     return user.to_dict(), 200
 
+#Research how to delelte logged in user, delete account and messages?
 @user_bp.route("/<id>", methods=["DELETE"])
 def delete(id):
     user = get_valid_item_by_id(User, id)
