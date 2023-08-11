@@ -21,7 +21,7 @@ def create_app(test_config=None):
     app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
     # app.config["SQLALCHEMY_ECHO"] = True
-    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://postgres@localhost/morti_database"
+    # app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://postgres@localhost/morti_database"
 
     if test_config is None:
         app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("RENDER_DATABASE_URI")

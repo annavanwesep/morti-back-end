@@ -70,35 +70,6 @@ def handle_farewell_messages():
     for message in messages :
         farewell_messages_response.append(message.to_dict())
     return jsonify(farewell_messages_response), 200
-
-#Selected message by id as IS_SENT to TRUE
-#AS IS, THIS ROUTE MARKS YOUR **OWN** MESSAGES TO BE SENT, INSTEAD OF YOUR TRUSTED PERSON 
-# NOT CORRECT YET: NEED SELF REFERENTIAL TABLE TO LINK USERS 
-@messages_bp.route("/<id>/expired", methods=["PATCH"])
-@jwt_required()
-def patch_messages(id):
-    current_user_email = get_jwt_identity()
-    try:
-        current_user = User.query.filter_by(email=current_user_email).first()
-    except Exception as e:
-        print("ERROR", str(e))
-        return {"error": "An error ocurred when retriveing current user"}, 404
-    
-    message_to_update = Message.query.filter_by(user_id=current_user.id, id=id).first()
-    print("Query message:", message_to_update)
-    
-    if message_to_update is None:
-        return {"error": "Message not found"}, 404
-    
-    try:
-        message_to_update.is_sent = True
-        db.session.commit()
-        return f"Message {id} has been updated!", 200
-    except Exception as e:
-        print("ERROR", str(e))
-        db.session.rollback()
-        return {"error": "An error occurred while updating the message"}, 500
-
     
 # DELETE ONE FAREWELL MESSAGE
 @messages_bp.route("/<id>", methods=["DELETE"])
@@ -127,7 +98,7 @@ def delete_one_message(id):
         db.session.rollback()
         return {"error": "An error occurred while deleting the message"}, 500
 
-#GET ALL MESSAGES ADDRESSED TO THE USER/RECEIVED MESSAGES
+#GET ALL MESSAGES ADDRESSED TO THE USER/RECEIVED MESSAGES and IS_SENT is True
 @messages_bp.route("/received", methods=['GET'])
 @jwt_required()
 def handle_received_messages():
@@ -143,5 +114,6 @@ def handle_received_messages():
     
     farewell_messages_response = []
     for message in messages :
-        farewell_messages_response.append(message.to_dict())
+        if message.is_sent == True: 
+            farewell_messages_response.append(message.to_dict())
     return jsonify(farewell_messages_response), 200
