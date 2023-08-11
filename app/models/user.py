@@ -2,7 +2,7 @@ from app import db
 
 # Association table
 trust_link = db.Table(
-    'trust_link',
+    'trust_links',
     db.Column('current_user_id', db.Integer, db.ForeignKey('users.id')),
     db.Column('trusted_user_id', db.Integer, db.ForeignKey('users.id'))
 )
@@ -23,7 +23,7 @@ class User(db.Model):
         secondary=trust_link, 
         primaryjoin=(trust_link.c.current_user_id == id),
         secondaryjoin=(trust_link.c.trusted_user_id == id),
-        backref=db.backref('trust_link', lazy='dynamic'), 
+        backref=db.backref('trust_links', lazy='dynamic'), 
         lazy='dynamic')
     
     def to_dict(self):
