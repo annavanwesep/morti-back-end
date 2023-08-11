@@ -113,7 +113,7 @@ def my_profile():
     }
     return jsonify(response_body), 200
 
-#GET ALL USERS
+#GET ALL USERS/DEBUGGING
 @user_bp.route("/users", methods=['GET'])
 def handle_users():
     user_query = request.args.get("users")
@@ -128,7 +128,7 @@ def handle_users():
     return jsonify(all_users_response), 200
 
 
-#GET A SINGLE USER
+#GET A SINGLE USER/DEBUGGING
 @user_bp.route("/users/<id>", methods=['GET'])
 def user(id):
     board = get_valid_item_by_id(User, id)

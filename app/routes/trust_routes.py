@@ -118,7 +118,7 @@ def set_messages_sent(trusted_by_id):
     
     messages_to_update = Message.query.filter_by(user_id=user_to_update.id).all()
     for message in messages_to_update:
-            message.is_sent = Trueg
+            message.is_sent = True
 
     db.session.commit()
     return jsonify({'message': f'Updated {len(messages_to_update)} messages for user {user_to_update.first_name}'}), 200

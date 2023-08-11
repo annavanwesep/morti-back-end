@@ -98,7 +98,7 @@ def delete_one_message(id):
         db.session.rollback()
         return {"error": "An error occurred while deleting the message"}, 500
 
-#GET ALL MESSAGES ADDRESSED TO THE USER/RECEIVED MESSAGES
+#GET ALL MESSAGES ADDRESSED TO THE USER/RECEIVED MESSAGES and IS_SENT is True
 @messages_bp.route("/received", methods=['GET'])
 @jwt_required()
 def handle_received_messages():
@@ -114,5 +114,6 @@ def handle_received_messages():
     
     farewell_messages_response = []
     for message in messages :
-        farewell_messages_response.append(message.to_dict())
+        if message.is_sent == True: 
+            farewell_messages_response.append(message.to_dict())
     return jsonify(farewell_messages_response), 200
