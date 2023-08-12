@@ -70,8 +70,9 @@ def get_users_trusting_current_user():
 
     trusted_by_response = []
     for user in users_trusting_current_user :
-        trusted_by_response.append(
-            {"first_name": user.first_name,
+        trusted_by_response.append({
+            "id": user.id,
+            "first_name": user.first_name,
             "last_name": user.last_name,
             "email": user.email}
         )
