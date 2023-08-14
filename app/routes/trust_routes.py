@@ -17,7 +17,7 @@ def add_trusted_user():
         current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
         print("ERROR", str(e))
-        return {"error": "An error ocurred when retriveing current user"}, 404
+        return {"error": "An error ocurred when retrieving current user"}, 404
 
     request_body = request.get_json()
 
@@ -40,7 +40,7 @@ def get_all_trusted_people():
         current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
         print("ERROR", str(e))
-        return {"error": "An error ocurred when retriveing current user"}, 404
+        return {"error": "An error ocurred when retrieving current user"}, 404
     
     trusted_people = current_user.trusted_users.all()
 
@@ -106,7 +106,7 @@ def set_messages_sent(trusted_by_id):
         current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
         print("ERROR", str(e))
-        return {"error": "An error ocurred when retriveing current user"}, 404
+        return {"error": "An error ocurred when retrieving current user"}, 404
     
     users_trusting_current_user = User.query.filter(User.trusted_users.contains(current_user)).all()
     user_to_update = None 

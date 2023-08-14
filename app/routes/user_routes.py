@@ -103,7 +103,7 @@ def my_profile():
         current_user = User.query.filter_by(email=current_user_email).first()
     except Exception as e:
         print("ERROR", str(e))
-        return {"error": "An error ocurred when retriveing current user"}, 404
+        return {"error": "An error ocurred when retrieving current user"}, 404
 
     response_body= {
         "about": f"Hello {current_user.first_name}! Send Farewells",
