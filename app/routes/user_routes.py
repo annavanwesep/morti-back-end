@@ -11,7 +11,7 @@ user_bp = Blueprint("users", __name__)
 
 bcrypt = Bcrypt()
 
-@user_bp.after_request
+# @user_bp.after_request
 def refresh_expiring_jwts(response):
     try:
         exp_timestamp = get_jwt()["exp"]
@@ -106,14 +106,26 @@ def my_profile():
         return {"error": "An error ocurred when retrieving current user"}, 404
 
     response_body= {
-        "about": f"Hello {current_user.first_name}! Send Farewells",
         "id": current_user.id,
         "email": current_user.email,
         "first_name": current_user.first_name
     }
     return jsonify(response_body), 200
 
-#GET ALL USERS/DEBUGGING
+@user_bp.route("/validate", methods=["POST"])
+@jwt_required()
+def validate_email():
+    email_to_validate = request.json["email"]
+    print("EMAIL", email_to_validate)
+
+    user_exists = User.query.filter_by(email=str(email_to_validate)).first()
+    
+    if user_exists is None:
+        return jsonify({"isValid": False}), 404 
+    return jsonify({"isValid": True}), 200
+
+#ROUTES FOR DEBUGGING: 
+# GET ALL USERS/DEBUGGING
 @user_bp.route("/users", methods=['GET'])
 def handle_users():
     user_query = request.args.get("users")
