@@ -1,40 +1,37 @@
-# Inspiration Board: Back-end Layer
+# Morti Web App: Back-end Layer
 
 This scaffold includes the following:
 
 ## `app/__init__.py`
 
-This file configures the app. It's where:
+Models:
 
-We expect developers to modify this file by:
-
-- Replacing the database connection string
-- Importing all models
-- Registering all blueprints
-
-Note that `create_app` also uses CORS. There is no extra action needed to be done with CORS.
+- User
+- Messages
 
 ## `app/routes.py`
 
-We expect endpoints to be defined here.
+Routes for users:
 
-The file already imports:
+As a user, I want to be able to register for an account.
+As a user, I want to be able to login to my account.
 
-- `Blueprint`
-- `request`
-- `jsonify`
-- `make_response`
-- `db`
+CRUD routes for messages:
 
-Feel free to alter these import statements.
-
-This file also has a comment to define a Blueprint. Feel free to delete it.
-
-## `app/models` Directory
-
-This project already includes `app/models/board.py` and `app/models/card.py`, to anticipate the models `Board` and `Card`.
-
-Both files already import `db`, for convenience!
+As a user, I want to be able to click a Create Farewell Message button to display a form to create a new message
+As a user I want to be able to click a Farewell Messages button to display all my farewell messages to see them
+As a user I want to be able to see a list of my saved messages so that I know they exist.
+As a user I want to be able to see the title, recipient name, if text, if audio.
+If message has audio, i want to be able to play it, pause it
+As a user i want to be able to click on a button to delete the whole farewell message 
+ 
+Routes for trusted Person:
+As a user i want to be able to click on Trusted person button to display create new trusted person and all my trusted people
+As a user i want to be able to create a new trusted person by inputting name and email 
+As a user I want to be able to see a list of trusted people to see their name and email.
+As a user I want to able able to click a button to delete one trusted person 
+As a user, if one of my trusted persons also adds me (accounts linked), I want to see a button that allows me to declare their death
+I should see a message that confirms I want to declare my trusted person dead
 
 ## `requirements.txt`
 
